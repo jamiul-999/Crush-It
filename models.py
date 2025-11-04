@@ -7,4 +7,6 @@ class Tocrush(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     description = Column(String)
-    priority = Column(Boolean, default=False)
+    priority = Column(Integer)
+    complete = Column(Boolean, default=False)
+    
