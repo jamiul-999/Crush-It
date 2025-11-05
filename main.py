@@ -58,3 +58,11 @@ async def update_tocrush(db: db_dependency,
     
     db.add(tocrush_model)
     db.commit()
+    
+@app.delete("/tocrush/{tocrush_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
+    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id).first()
+    if tocrush_model is None:
+        raise HTTPException(status_code=404, detail="Task not found!")
+    db.query(Tocrush).filter(Tocrush.id == tocrush_id).delete()
+    db.commit()
