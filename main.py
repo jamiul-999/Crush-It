@@ -18,7 +18,7 @@ def get_db():
         
 db_dependency = Annotated[Session, Depends(get_db)]        
         
-@app.get("/")
+@app.get("/", status_code=status.HTTP_200_OK)
 async def read_all(db: db_dependency):
     return db.query(Tocrush).all()
 
