@@ -36,3 +36,8 @@ async def read_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
         return tocrush_model
     raise HTTPException(status_code=404, detail="Task not found!")
 
+@app.post("/tocrush/", status_code=status.HTTP_201_CREATED)
+async def create_task(db: db_dependency, tocrush_request: TocrushRequest):
+    tocrush_model = Tocrush(**tocrush_request.dict())
+    db.add(tocrush_model)
+    db.commit()
