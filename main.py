@@ -5,10 +5,13 @@ from fastapi import FastAPI, Depends, HTTPException, Path, status
 import models
 from models import Tocrush
 from database import engine, SessionLocal
+from routers import auth
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
+
+app.include_router(auth.router)
 
 def get_db():
     db = SessionLocal()
