@@ -1,4 +1,5 @@
 from typing import Annotated
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Depends, HTTPException, Path, status
 import models
@@ -16,7 +17,13 @@ def get_db():
     finally:
         db.close()
         
-db_dependency = Annotated[Session, Depends(get_db)]        
+db_dependency = Annotated[Session, Depends(get_db)]     
+
+class TocrushRequest(BaseModel):
+    title: str = Field(min_length=3)
+    description: str = Field(min_length=3, max_length=100)
+    priority: int = Field(gt=0, lt=6)
+    complete: bool 
         
 @app.get("/", status_code=status.HTTP_200_OK)
 async def read_all(db: db_dependency):
@@ -28,3 +35,4 @@ async def read_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
     if tocrush_model is not None:
         return tocrush_model
     raise HTTPException(status_code=404, detail="Task not found!")
+
