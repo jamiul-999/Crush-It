@@ -38,7 +38,7 @@ async def read_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
 
 @app.post("/tocrush/", status_code=status.HTTP_201_CREATED)
 async def create_task(db: db_dependency, tocrush_request: TocrushRequest):
-    tocrush_model = Tocrush(**tocrush_request.dict())
+    tocrush_model = Tocrush(**tocrush_request.model_dump())
     db.add(tocrush_model)
     db.commit()
     
