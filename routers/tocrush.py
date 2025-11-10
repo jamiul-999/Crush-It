@@ -38,6 +38,8 @@ async def create_task(db: db_dependency, tocrush_request: TocrushRequest):
     tocrush_model = Tocrush(**tocrush_request.model_dump())
     db.add(tocrush_model)
     db.commit()
+    db.refresh(tocrush_model)
+    return tocrush_model
     
 @router.put("/tocrush/{tocrush_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_tocrush(db: db_dependency, 
@@ -46,14 +48,13 @@ async def update_tocrush(db: db_dependency,
                         ):
     tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id).first()
     if tocrush_model is None:
-        raise HTTPException(satus_code=404, detail="Task not found!")
+        raise HTTPException(status_code=404, detail="Task not found!")
     
     tocrush_model.title = tocrush_request.title
     tocrush_model.description = tocrush_request.description
     tocrush_model.priority = tocrush_request.priority
     tocrush_model.complete = tocrush_request.complete
     
-    db.add(tocrush_model)
     db.commit()
     
 @router.delete("/tocrush/{tocrush_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -63,3 +64,4 @@ async def delete_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
         raise HTTPException(status_code=404, detail="Task not found!")
     db.query(Tocrush).filter(Tocrush.id == tocrush_id).delete()
     db.commit()
+    return {"detail": "Task deleted successfully"}
