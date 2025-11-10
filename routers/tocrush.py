@@ -50,10 +50,10 @@ async def update_tocrush(db: db_dependency,
     if tocrush_model is None:
         raise HTTPException(status_code=404, detail="Task not found!")
     
-    tocrush_model.title = tocrush_request.title
-    tocrush_model.description = tocrush_request.description
-    tocrush_model.priority = tocrush_request.priority
-    tocrush_model.complete = tocrush_request.complete
+    tocrush_model.title = tocrush_request.title # type: ignore
+    tocrush_model.description = tocrush_request.description # type: ignore
+    tocrush_model.priority = tocrush_request.priority # type: ignore
+    tocrush_model.complete = tocrush_request.complete # type: ignore
     
     db.commit()
     
