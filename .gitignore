@@ -1,3 +1,4 @@
 env
+.env
 crush_it.db
 __pycache__/
