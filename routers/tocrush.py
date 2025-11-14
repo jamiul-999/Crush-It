@@ -79,10 +79,13 @@ async def update_tocrush(user: user_dependency,
     db.commit()
     
 @router.delete("/tocrush/{tocrush_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
-    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id).first()
+async def delete_tocrush(user: user_dependency, db: db_dependency, tocrush_id: int = Path(gt=0)):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
+    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id)\
+        .filter(Tocrush.owner_id == user.get('id')).first()
     if tocrush_model is None:
         raise HTTPException(status_code=404, detail="Task not found!")
-    db.query(Tocrush).filter(Tocrush.id == tocrush_id).delete()
+    db.query(Tocrush).filter(Tocrush.id == tocrush_id).filter(Tocrush.owner_id == user.get('id')).delete()
     db.commit()
     return {"detail": "Task deleted successfully"}
