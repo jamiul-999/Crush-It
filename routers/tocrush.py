@@ -26,13 +26,23 @@ class TocrushRequest(BaseModel):
         
 @router.get("/", status_code=status.HTTP_200_OK)
 async def read_all(user: user_dependency, db: db_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Athentication Failed')
+    
     return db.query(Tocrush).filter(Tocrush.owner_id == user.get('id')).all()
 
 @router.get("/tocrush/{tocrush_id}", status_code=status.HTTP_200_OK)
-async def read_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
-    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id).first()
+async def read_tocrush(user: user_dependency, 
+                       db: db_dependency, 
+                       tocrush_id: int = Path(gt=0)):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Athentication Failed')
+    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id)\
+        .filter(Tocrush.owner_id == user.get('id')).first()
+    
     if tocrush_model is not None:
         return tocrush_model
+    
     raise HTTPException(status_code=404, detail="Task not found!")
 
 @router.post("/tocrush/", status_code=status.HTTP_201_CREATED)
