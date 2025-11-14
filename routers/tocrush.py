@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from models import Tocrush
 from database import SessionLocal
+from .auth import get_current_user
 
 router = APIRouter()
 
@@ -14,7 +15,8 @@ def get_db():
     finally:
         db.close()
         
-db_dependency = Annotated[Session, Depends(get_db)]     
+db_dependency = Annotated[Session, Depends(get_db)]   
+user_dependency = Annotated[dict, Depends(get_current_user)]  
 
 class TocrushRequest(BaseModel):
     title: str = Field(min_length=3)
@@ -34,8 +36,13 @@ async def read_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
     raise HTTPException(status_code=404, detail="Task not found!")
 
 @router.post("/tocrush/", status_code=status.HTTP_201_CREATED)
-async def create_task(db: db_dependency, tocrush_request: TocrushRequest):
-    tocrush_model = Tocrush(**tocrush_request.model_dump())
+async def create_task(user: user_dependency, 
+                      db: db_dependency, 
+                      tocrush_request: TocrushRequest):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Athentication Failed')
+    
+    tocrush_model = Tocrush(**tocrush_request.model_dump(), owner_id=user.get('id'))
     db.add(tocrush_model)
     db.commit()
     db.refresh(tocrush_model)
