@@ -25,8 +25,8 @@ class TocrushRequest(BaseModel):
     complete: bool 
         
 @router.get("/", status_code=status.HTTP_200_OK)
-async def read_all(db: db_dependency):
-    return db.query(Tocrush).all()
+async def read_all(user: user_dependency, db: db_dependency):
+    return db.query(Tocrush).filter(Tocrush.owner_id == user.get('id')).all()
 
 @router.get("/tocrush/{tocrush_id}", status_code=status.HTTP_200_OK)
 async def read_tocrush(db: db_dependency, tocrush_id: int = Path(gt=0)):
