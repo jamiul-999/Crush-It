@@ -59,11 +59,15 @@ async def create_task(user: user_dependency,
     return tocrush_model
     
 @router.put("/tocrush/{tocrush_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_tocrush(db: db_dependency, 
+async def update_tocrush(user: user_dependency,
+                         db: db_dependency, 
                          tocrush_request: TocrushRequest,
                          tocrush_id: int = Path(gt=0),                          
                         ):
-    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id).first()
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
+    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id)\
+        .filter(Tocrush.owner_id == user.get('id')).first()
     if tocrush_model is None:
         raise HTTPException(status_code=404, detail="Task not found!")
     
