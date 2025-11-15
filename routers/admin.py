@@ -35,7 +35,7 @@ async def delete_tocrush(user: user_dependency,
                          tocrush_id: int = Path(gt=0)):
     if user is None or user.get('user_role') != 'admin':
         raise HTTPException(status_code=401, detail='Not authorized')
-    todo_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id).first()
+    tocrush_model = db.query(Tocrush).filter(Tocrush.id == tocrush_id).first()
     if tocrush_model is None:
         raise HTTPException(status_code=404, detail="Task not found!!")
     db.query(Tocrush).filter(Tocrush.id == tocrush_id).delete()
