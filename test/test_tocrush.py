@@ -158,3 +158,8 @@ def test_delete_tocrush(test_tocrush):
     db = TestingSessionLocal()
     model = db.query(Tocrush).filter(Tocrush.id == test_tocrush.id).first()
     assert model is None
+    
+def test_delete_tocrush_not_found(test_tocrush):
+    response = client.delete('/tocrush/999')
+    assert response.status_code == 404
+    assert response.json() == {'detail': 'Task not found!'}
