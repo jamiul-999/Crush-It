@@ -125,3 +125,17 @@ def test_create_tocrush(test_tocrush):
     assert model.description == request_data.get('description')
     assert model.priority == request_data.get('priority')
     assert model.complete == request_data.get('complete')
+    
+def test_update_tocrush(test_tocrush):
+    request_data={
+        'title': 'Change the title of the tocrush already saved!',
+        'description': 'Need to learn everyday!',
+        'priority': 5,
+        'complete': False,
+    }
+    
+    response = client.put(f'/tocrush/{test_tocrush.id}', json=request_data)
+    assert response.status_code == 204
+    db = TestingSessionLocal()
+    model = db.query(Tocrush).filter(Tocrush.id == test_tocrush.id).first()
+    assert model.title == 'Change the title of the tocrush already saved!'
