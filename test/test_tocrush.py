@@ -139,3 +139,22 @@ def test_update_tocrush(test_tocrush):
     db = TestingSessionLocal()
     model = db.query(Tocrush).filter(Tocrush.id == test_tocrush.id).first()
     assert model.title == 'Change the title of the tocrush already saved!'
+    
+def test_update_tocrush_not_found(test_tocrush):
+    request_data={
+        'title': 'Change the title of the tocrush already saved!',
+        'description': 'Need to learn everyday!',
+        'priority': 5,
+        'complete': False,
+    }
+    
+    response = client.put('/tocrush/999', json=request_data)
+    assert response.status_code == 404
+    assert response.json() == {'detail': 'Task not found!'}
+    
+def test_delete_tocrush(test_tocrush):
+    response = client.delete(f'/tocrush/{test_tocrush.id}')
+    assert response.status_code == 204
+    db = TestingSessionLocal()
+    model = db.query(Tocrush).filter(Tocrush.id == test_tocrush.id).first()
+    assert model is None
