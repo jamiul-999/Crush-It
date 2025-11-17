@@ -5,6 +5,7 @@ from main import app
 from fastapi.testclient import TestClient
 import pytest
 from models import Tocrush, Users
+from routers.auth import bcrypt_context
 
 SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:jk#*943p2k@localhost/testTocrushApplicationDatabase'
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -31,9 +32,9 @@ def test_user():
         email='test@example.com',
         first_name='Test',
         last_name='User',
-        hashed_password='fakehashedpassword',
+        hashed_password=bcrypt_context.hash('fakehashedpassword'),
         is_active=True,
-        role='admin'
+        role='admin',
     )
     
     db = TestingSessionLocal()
