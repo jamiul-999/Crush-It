@@ -15,3 +15,7 @@ def test_return_user(test_user):
     assert response.json()['is_active'] == True
     assert response.json()['role'] == 'admin'
     
+def test_change_password_success(test_user):
+    response = client.put("/user/password", json={"password": "fakehashedpassword",
+                                                  "new_password":"newpassword"})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
